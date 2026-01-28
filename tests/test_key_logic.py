@@ -1,5 +1,5 @@
 import random
-from key_solver import SimplifiedMusicSolver # Assuming the previous logic is in key_solver.py
+from src.key_solver import SimplifiedMusicSolver # Assuming the previous logic is in key_solver.py
 
 def run_advanced_test_suite():
     solver = SimplifiedMusicSolver()
@@ -75,27 +75,3 @@ if __name__ == "__main__":
     run_advanced_test_suite()
 
 
-# test_key_logic.py
-# from key_solver import MusicLogicSolver  # <--- THIS IS THE MISSING LINK!
-
-# def run_benchmark_tests():
-#     solver = MusicLogicSolver()
-    
-#     # Test cases mapping input notes to expected output
-#     test_suite = [
-#         ([60, 64, 67], "C Major"),                     # C-E-G
-#         ([69, 72, 76, 80], "A Harmonic Minor"),        # A-C-E-G#
-#         ([69, 72, 76, 78, 80], "A Melodic Minor Asc"), # A-C-E-F#-G#
-#         ([67, 71, 74, 66], "G Major")                  # G-B-D-F# (Out of order)
-#     ]
-
-#     print(f"{'Input Notes':<25} | {'Detected Key':<20} | Status")
-#     print("-" * 65)
-
-#     for notes, expected in test_suite:
-#         actual = solver.solve_key(notes)
-#         status = "✅" if actual == expected else f"❌ (Expected {expected})"
-#         print(f"{str(notes):<25} | {actual:<20} | {status}")
-
-# if __name__ == "__main__":
-#     run_benchmark_tests()
