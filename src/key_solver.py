@@ -26,14 +26,22 @@ class SimplifiedMusicSolver:
 
         # 2. Determine the result
         if len(candidates) == 0:
-            return "No Match (Atonal/Dissonant)"
-        if len(candidates) > 1:
-            return f"Indeterminate (Could be: {', '.join(candidates[:3])}...)"
+            return ["No Match (Atonal/Dissonant)"]
         
-        return candidates[0]
-# --- QUICK TEST ---
-solver = SimplifiedMusicSolver()
-# Testing your G Major set from earlier: [G, B, D, F#]
-print(solver.solve_key([67, 71, 74, 66]))
+        return candidates
 
+    def rolling_key_search(self, notes, window_size=5):
+        """
+        Returns a list of (index, candidates) for each window in the note sequence.
+        """
+        results = []
+        for i in range(len(notes) - window_size + 1):
+            window = notes[i : i + window_size]
+            results.append((i, self.solve_key(window)))
+        return results
 
+if __name__ == "__main__":
+    # --- QUICK TEST ---
+    solver = SimplifiedMusicSolver()
+    # Testing your G Major set from earlier: [G, B, D, F#]
+    print(solver.solve_key([67, 71, 74, 66]))
