@@ -38,9 +38,6 @@ def run_modulation_test():
         window = full_melody[i : i + window_size]
         readable_notes = "-".join([solver.note_names[n % 12] for n in window])
         
-        # Highlight the expected key if present
-        display_candidates = []
-        
         # Determine expected key based on position
         expected_key = "C Major" if i < len(c_major_part) - window_size else "E Major"
         
@@ -48,11 +45,15 @@ def run_modulation_test():
         if i >= len(c_major_part) - window_size and i < len(c_major_part):
             expected_key = "Transition"
 
+        # Create a display string that includes percentages
+        display_candidates = []
         for cand in candidates:
-            if cand == expected_key:
-                display_candidates.append(f"✅ {cand}")
+            key_name = cand['key']
+            percentage = cand['match_percentage']
+            if key_name == expected_key:
+                display_candidates.append(f"✅ {key_name} ({percentage}%)")
             else:
-                display_candidates.append(cand)
+                display_candidates.append(f"{key_name} ({percentage}%)")
                 
         # Truncate for display if too long
         cand_str = ", ".join(display_candidates)

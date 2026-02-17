@@ -10,24 +10,38 @@ class SimplifiedMusicSolver:
         }
 
     def solve_key(self, notes):
-        # 1. Simplify everything to the 12 basic notes (Pitch Classes)
-        # This handles different octaves automatically (60 % 12 = 0, 72 % 12 = 0)
+        # 1. Simplify to Pitch Classes and handle empty input
         input_pcs = set([n % 12 for n in notes])
-        
+        num_input_notes = len(input_pcs)
+
+        if num_input_notes == 0:
+            return []
+
+        best_percentage = 0.0
         candidates = []
 
         for root in range(12):
             for mode_name, intervals in self.templates.items():
                 scale_pcs = set([(root + i) % 12 for i in intervals])
                 
-                # Logic: Is every note the user gave me inside THIS scale?
-                if input_pcs.issubset(scale_pcs):
-                    candidates.append(f"{self.note_names[root]} {mode_name}")
+                # Calculate how many input notes match the current scale
+                score = len(input_pcs.intersection(scale_pcs))
+                
+                # Avoid division by zero and calculate match percentage
+                match_percentage = (score / num_input_notes) * 100 if num_input_notes > 0 else 0
+                
+                key_name = f"{self.note_names[root]} {mode_name}"
 
-        # 2. Determine the result
-        if len(candidates) == 0:
-            return ["No Match (Atonal/Dissonant)"]
-        
+                # If this key is a better fit, it becomes the new sole best candidate
+                if match_percentage > best_percentage:
+                    best_percentage = match_percentage
+                    rounded_percentage = round(best_percentage, 2)
+                    candidates = [{'key': key_name, 'match_percentage': rounded_percentage}]
+                # If it's an equally good fit, add it to the list of top candidates
+                elif match_percentage == best_percentage and best_percentage > 0:
+                    rounded_percentage = round(match_percentage, 2)
+                    candidates.append({'key': key_name, 'match_percentage': rounded_percentage})
+
         return candidates
 
     def rolling_key_search(self, notes, window_size=5):

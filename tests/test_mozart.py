@@ -46,16 +46,20 @@ def run_mozart_test():
         readable_notes = " ".join([solver.note_names[n % 12] for n in window])
         
         # Format candidates
+        # Get the names of the top-scoring keys from the new dictionary format
+        top_keys = [c['key'] for c in candidates]
+        
         # We expect C Major to be present in almost all windows
         display_str = ""
-        if "C Major" in candidates:
+        if "C Major" in top_keys:
             display_str = "✅ C Major"
             # Show others if they exist, but keep it clean
-            others = [c for c in candidates if c != "C Major"]
+            others = [k for k in top_keys if k != "C Major"]
             if others:
                 display_str += f" (+ {len(others)} others)"
         else:
-            display_str = ", ".join(candidates[:3])
+            # If C Major isn't the top, show the top candidates with their percentages
+            display_str = ", ".join([f"{c['key']} ({c['match_percentage']}%)" for c in candidates[:3]])
             
         print(f"{i:<4} | {readable_notes:<30} | {display_str}")
 

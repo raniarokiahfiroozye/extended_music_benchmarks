@@ -51,14 +51,24 @@ def run_bach_test():
         window = full_melody[i : i + window_size]
         readable_notes = " ".join([solver.note_names[n % 12] for n in window])
         
+        # Extract key names from the new dictionary format
+        key_names = [c['key'] for c in candidates]
+
         # Highlight keys for clearer output
         display_str = ""
-        found_keys = [k for k in candidates if k in ["C Major", "G Major"]]
+        found_keys = [k for k in key_names if k in ["C Major", "G Major"]]
         
         if found_keys:
-            display_str = " / ".join([f"✅ {k}" for k in found_keys])
+            # Create a more detailed string showing percentages for the keys we care about
+            display_list = []
+            # We only want to show the keys we found, but with their percentages
+            for cand_dict in candidates:
+                if cand_dict['key'] in found_keys:
+                    display_list.append(f"✅ {cand_dict['key']} ({cand_dict['match_percentage']}%)")
+            display_str = " / ".join(display_list)
         else:
-            display_str = ", ".join(candidates[:3])
+            # If our main keys aren't found, show the top 3 actual candidates with percentages
+            display_str = ", ".join([f"{c['key']} ({c['match_percentage']}%)" for c in candidates[:3]])
             
         print(f"{i:<4} | {readable_notes:<30} | {display_str}")
 
