@@ -63,14 +63,25 @@ def main():
     print("\n   Results per Bar:")
     print("   " + "-" * 50)
     for r in results:
+        print(f"   Bar {r['start_bar']:<3}:")
         if r['candidates']:
-            top_key = r['candidates'][0]['key']
-            confidence = r['candidates'][0]['correlation']
+            # Take top 3 candidates
+            top_candidates = r['candidates'][:3]
             
-            mark = "✅" if "G Minor" in top_key else "  "
-            print(f"   {mark} Bar {r['start_bar']:<3} | {top_key:<20} (Corr: {confidence:.2f})")
+            for i, candidate in enumerate(top_candidates):
+                key = candidate['key']
+                confidence = candidate['correlation']
+                
+                # Highlight G Minor if it's in the top candidates
+                mark = "✅" if "G Minor" in key else "  "
+                
+                # Indent subsequent candidates
+                indent = "   " if i > 0 else ""
+                
+                print(f"{indent}{mark}  - {key:<20} (Corr: {confidence:.3f})")
         else:
-            print(f"     Bar {r['start_bar']:<3} | No key detected (empty bar)")
+            print("     No key detected (empty bar)")
+        print("   " + "-" * 50)
 
 if __name__ == '__main__':
     main()
