@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .DS_Store
 stimuli/*.wav
+best_submission_2324.pdf

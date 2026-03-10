@@ -92,9 +92,10 @@ class TimeSignatureSolver:
 
         return final_changes
 
-    def _detect_from_performance(self, mid, accent_threshold=95, ioi_tolerance=0.1):
+    def _detect_from_performance(self, mid, accent_threshold=95, window_size_bars=2):
         """
-        Analyzes the MIDI performance to detect the time signature based on note accents.
+        Analyzes the MIDI performance to detect the time signature(s) based on note accents.
+        Uses a sliding window for change detection.
         """
         tpb = mid.ticks_per_beat if mid.ticks_per_beat > 0 else 480
         
@@ -106,40 +107,134 @@ class TimeSignatureSolver:
                 note_events.append({'tick': current_tick, 'velocity': msg.velocity})
 
         if not note_events:
-            return [{'time_signature': "4/4", 'bar': 1, 'tick': 0}] # Default if no notes
-
-        # Find accented notes
-        accented_notes = [n for n in note_events if n['velocity'] > accent_threshold]
-
-        if len(accented_notes) < 4: # Not enough data for a reliable guess
-            return [{'time_signature': "4/4", 'bar': 1, 'tick': 0}] # Default
-
-        # Calculate Inter-Onset Intervals (IOIs) in ticks
-        iois = np.diff([n['tick'] for n in accented_notes])
-
-        if len(iois) == 0:
             return [{'time_signature': "4/4", 'bar': 1, 'tick': 0}]
 
-        # Find the most common IOI (the beat)
-        ioi_counts = Counter(iois)
-        most_common_ioi = ioi_counts.most_common(1)[0][0]
-
-        # Try to fit to common time signatures
-        for beats_per_bar in [4, 3, 2]:
-            bar_duration = most_common_ioi * beats_per_bar
-            
-            # Count how many IOIs match a multiple of the bar duration
-            matches = 0
-            for ioi in iois:
-                if abs(ioi % bar_duration) < (bar_duration * ioi_tolerance):
-                    matches +=1
-            
-            # If a significant number of IOIs align with the bar grid, we have a match
-            if matches / len(iois) > 0.5: # Heuristic: more than 50% of accents align
-                return [{'time_signature': f"{beats_per_bar}/4", 'bar': 1, 'tick': 0}]
+        max_tick = note_events[-1]['tick']
         
-        # Fallback if no clear pattern emerges
-        return [{'time_signature': "4/4", 'bar': 1, 'tick': 0}]
+        # Reduced window size for better resolution of changes
+        window_size_ticks = tpb * 4 * window_size_bars 
+        hop_size_ticks = tpb * 4 # 1 bar hop (assuming 4/4 as base)
+        
+        detected_signatures = []
+        
+        for start_tick in range(0, int(max_tick), hop_size_ticks):
+            end_tick = start_tick + window_size_ticks
+            window_notes = [n for n in note_events if start_tick <= n['tick'] < end_tick]
+            
+            if len(window_notes) < 4:
+                continue
+                
+            ts = self._estimate_window_ts(window_notes, tpb, accent_threshold)
+            detected_signatures.append({'tick': start_tick, 'ts': ts})
+            
+        if not detected_signatures:
+            return [{'time_signature': "4/4", 'bar': 1, 'tick': 0}]
+
+        # Consolidate changes
+        final_changes = []
+        current_ts = None
+        current_bar_offset = 1
+        last_tick = 0
+        
+        for sig in detected_signatures:
+            if sig['ts'] != current_ts:
+                # Calculate bar number (approximate since we don't know previous bars perfectly)
+                if current_ts:
+                    # Increment bar count based on time passed in the previous TS
+                    num, den = map(int, current_ts.split('/'))
+                    ticks_per_bar = (tpb * num * 4) / den
+                    bars_passed = (sig['tick'] - last_tick) / ticks_per_bar
+                    current_bar_offset += round(bars_passed)
+                
+                current_ts = sig['ts']
+                last_tick = sig['tick']
+                
+                final_changes.append({
+                    'time_signature': current_ts,
+                    'bar': max(1, current_bar_offset),
+                    'tick': sig['tick']
+                })
+                
+        return final_changes
+
+    def _estimate_window_ts(self, notes, tpb, accent_threshold):
+        """Helper to estimate the TS for a specific window of notes."""
+        if len(notes) < 4: return "4/4"
+
+        all_ticks = np.array([n['tick'] for n in notes])
+        all_vels = np.array([n['velocity'] for n in notes])
+        
+        # 1. Determine Primary Beat (Pulse)
+        iois = np.diff(all_ticks)
+        ioi_counts = Counter(iois)
+        # Use the most common IOI that is at least a quarter note (or tpb)
+        # as the basis for our 'beat'
+        most_common_iois = [ioi for ioi, count in ioi_counts.most_common(5)]
+        
+        # Priority: tpb (480), then other common IOIs
+        beat_guess = tpb
+        for ioi in most_common_iois:
+            if ioi >= tpb:
+                beat_guess = ioi
+                break
+        
+        best_overall_score = -1
+        best_overall_n = 4
+        
+        # 2. Search only the Numerator space for the detected beat
+        for n in [2, 3, 4, 5, 6, 7]:
+            bar_len = beat_guess * n
+            
+            # Try every note in the first few bars as a potential downbeat
+            max_notes_to_check = min(len(all_ticks), 12)
+            best_n_total_alignment = -1
+            best_n_downbeat_score = -1
+            best_n_offset = 0
+            
+            for offset_candidate in all_ticks[:max_notes_to_check]:
+                offsets = (all_ticks - offset_candidate) % bar_len
+                
+                # A. Total Alignment (notes on any beat boundary within the bar)
+                beat_offsets = (all_ticks - offset_candidate) % beat_guess
+                on_beat = np.sum((beat_offsets < beat_guess * 0.1) | (beat_offsets > beat_guess * 0.9))
+                alignment_score = on_beat / len(all_ticks)
+                
+                # B. Downbeat Strength (how many accented notes land on the bar start)
+                on_bar_mask = (offsets < bar_len * 0.1) | (offsets > bar_len * 0.9)
+                downbeat_vels = all_vels[on_bar_mask]
+                if len(downbeat_vels) > 0:
+                    downbeat_score = np.mean(downbeat_vels)
+                else:
+                    downbeat_score = 0
+                
+                if downbeat_score > best_n_downbeat_score:
+                    best_n_downbeat_score = downbeat_score
+                    best_n_total_alignment = alignment_score
+                    best_n_offset = offset_candidate
+            
+            # Final score for this 'n'
+            # We want to maximize the average velocity of notes we CALL downbeats
+            total_score = (best_n_total_alignment * 0.5) + (best_n_downbeat_score / 100.0)
+            
+            # Velocity bonus for 4/4 (specifically checking Beat 3 vs Beat 1)
+            vel_bonus = 0
+            if n == 4:
+                best_offsets = (all_ticks - best_n_offset) % bar_len
+                b1_mask = (best_offsets < bar_len * 0.1) | (best_offsets > bar_len * 0.9)
+                b3_mask = (abs(best_offsets - (beat_guess * 2)) < bar_len * 0.1)
+                v1 = np.mean(all_vels[b1_mask]) if np.any(b1_mask) else 0
+                v3 = np.mean(all_vels[b3_mask]) if np.any(b3_mask) else 0
+                if v1 > v3 + 5:
+                    vel_bonus = 0.2
+            
+            total_score += vel_bonus
+            total_score -= (n * 0.01) # Parsimony
+
+            if total_score > best_overall_score:
+                best_overall_score = total_score
+                best_overall_n = n
+                    
+        return f"{best_overall_n}/4"
 
 
 if __name__ == '__main__':
