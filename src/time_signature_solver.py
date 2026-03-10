@@ -163,6 +163,7 @@ class TimeSignatureSolver:
 
         all_ticks = np.array([n['tick'] for n in notes])
         all_vels = np.array([n['velocity'] for n in notes])
+        mean_win_vel = np.mean(all_vels) if len(all_vels) > 0 else 1
         
         # 1. Determine Primary Beat (Pulse)
         iois = np.diff(all_ticks)
@@ -213,10 +214,12 @@ class TimeSignatureSolver:
                     best_n_offset = offset_candidate
             
             # Final score for this 'n'
-            # We want to maximize the average velocity of notes we CALL downbeats
-            total_score = (best_n_total_alignment * 0.5) + (best_n_downbeat_score / 100.0)
+            # Use relative downbeat strength (ratio to mean velocity)
+            relative_downbeat_strength = best_n_downbeat_score / mean_win_vel
+            total_score = (best_n_total_alignment * 0.5) + (relative_downbeat_strength * 0.5)
             
             # Velocity bonus for 4/4 (specifically checking Beat 3 vs Beat 1)
+            # Use a relative threshold (e.g., Beat 1 is 5% stronger than Beat 3)
             vel_bonus = 0
             if n == 4:
                 best_offsets = (all_ticks - best_n_offset) % bar_len
@@ -224,7 +227,7 @@ class TimeSignatureSolver:
                 b3_mask = (abs(best_offsets - (beat_guess * 2)) < bar_len * 0.1)
                 v1 = np.mean(all_vels[b1_mask]) if np.any(b1_mask) else 0
                 v3 = np.mean(all_vels[b3_mask]) if np.any(b3_mask) else 0
-                if v1 > v3 + 5:
+                if v1 > v3 * 1.05: # Relative: 5% stronger
                     vel_bonus = 0.2
             
             total_score += vel_bonus
