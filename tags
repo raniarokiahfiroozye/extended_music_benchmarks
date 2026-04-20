@@ -1,0 +1,55 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/nfiroo/dev/extended_music_benchmarks/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+SimplifiedMusicSolver	src/key_solver.py	/^class SimplifiedMusicSolver:$/;"	c	line:2	language:Python	inherits:	access:public
+StimulusGenerator	tests/test_key_logic.py	/^class StimulusGenerator:$/;"	c	line:37	language:Python	inherits:	access:public
+TestNewKeyLogic	tests/test_new_key_logic.py	/^class TestNewKeyLogic(unittest.TestCase):$/;"	c	line:4	language:Python	inherits:unittest.TestCase	access:public
+TimeSignatureSolver	src/time_signature_solver.py	/^class TimeSignatureSolver:$/;"	c	line:5	language:Python	inherits:	access:public
+__init__	src/key_solver.py	/^    def __init__(self):$/;"	m	line:3	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self)
+__init__	tests/test_key_logic.py	/^    def __init__(self):$/;"	m	line:38	language:Python	class:StimulusGenerator	access:public	signature:(self)
+_detect_from_performance	src/time_signature_solver.py	/^    def _detect_from_performance(self, mid, accent_threshold=95, window_size_bars=2):$/;"	m	line:95	language:Python	class:TimeSignatureSolver	access:protected	signature:(self, mid, accent_threshold=95, window_size_bars=2)
+_estimate_window_ts	src/time_signature_solver.py	/^    def _estimate_window_ts(self, notes, tpb, accent_threshold):$/;"	m	line:160	language:Python	class:TimeSignatureSolver	access:protected	signature:(self, notes, tpb, accent_threshold)
+analyze_by_bars	src/key_solver.py	/^    def analyze_by_bars(self, file_path, bars_per_window=4, step_bars=1):$/;"	m	line:164	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, file_path, bars_per_window=4, step_bars=1)
+analyze_by_time	src/key_solver.py	/^    def analyze_by_time(self, file_path, window_seconds=5.0, step_seconds=1.0):$/;"	m	line:259	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, file_path, window_seconds=5.0, step_seconds=1.0)
+analyze_midi	src/key_solver.py	/^    def analyze_midi(self, file_path, use_musical_grid=False, window_size=None, step_size=None):$/;"	m	line:311	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, file_path, use_musical_grid=False, window_size=None, step_size=None)
+create_test_midi	tests/test_performance_ts.py	/^def create_test_midi(file_path):$/;"	f	line:12	language:Python	access:public	signature:(file_path)
+detect_time_signature	src/time_signature_solver.py	/^    def detect_time_signature(self, file_path):$/;"	m	line:6	language:Python	class:TimeSignatureSolver	access:public	signature:(self, file_path)
+generate_dissonant_cluster	tests/test_key_logic.py	/^    def generate_dissonant_cluster(self, num_notes=8):$/;"	m	line:64	language:Python	class:StimulusGenerator	access:public	signature:(self, num_notes=8)
+generate_scrambled_scale	tests/test_key_logic.py	/^    def generate_scrambled_scale(self, root_name, scale_type):$/;"	m	line:47	language:Python	class:StimulusGenerator	access:public	signature:(self, root_name, scale_type)
+load_midi	src/key_solver.py	/^    def load_midi(self, file_path):$/;"	m	line:78	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, file_path)
+load_midi_seconds	src/key_solver.py	/^    def load_midi_seconds(self, file_path):$/;"	m	line:115	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, file_path)
+main	tests/run_jazz_analysis.py	/^def main():$/;"	f	line:9	language:Python	access:public	signature:()
+main	tests/test_new_jazz.py	/^def main():$/;"	f	line:12	language:Python	access:public	signature:()
+main	tests/test_time_signature.py	/^def main():$/;"	f	line:12	language:Python	access:public	signature:()
+np	src/key_solver.py	/^import numpy as np$/;"	I	line:1	language:Python	access:public	nameref:module:numpy
+np	src/time_signature_solver.py	/^import numpy as np$/;"	I	line:2	language:Python	access:public	nameref:module:numpy
+project_root	tests/test_accent_based_time_signature.py	/^project_root = os.path.dirname(script_dir)$/;"	v	line:6	language:Python	access:public
+project_root	tests/test_new_jazz.py	/^project_root = os.path.dirname(script_dir)$/;"	v	line:7	language:Python	access:public
+project_root	tests/test_performance_ts.py	/^project_root = os.path.dirname(script_dir)$/;"	v	line:7	language:Python	access:public
+project_root	tests/test_time_signature.py	/^project_root = os.path.dirname(script_dir)$/;"	v	line:7	language:Python	access:public
+rolling_key_search	src/key_solver.py	/^    def rolling_key_search(self, notes, window_size=5):$/;"	m	line:154	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, notes, window_size=5)
+run_advanced_test_suite	tests/test_key_logic.py	/^def run_advanced_test_suite():$/;"	f	line:4	language:Python	access:public	signature:()
+run_bach_test	tests/test_bach_invention.py	/^def run_bach_test():$/;"	f	line:9	language:Python	access:public	signature:()
+run_modulation_test	tests/test_melody_modulation.py	/^def run_modulation_test():$/;"	f	line:9	language:Python	access:public	signature:()
+run_mozart_test	tests/test_mozart.py	/^def run_mozart_test():$/;"	f	line:9	language:Python	access:public	signature:()
+script_dir	tests/test_accent_based_time_signature.py	/^script_dir = os.path.dirname(os.path.abspath(__file__))$/;"	v	line:5	language:Python	access:public
+script_dir	tests/test_new_jazz.py	/^script_dir = os.path.dirname(os.path.abspath(__file__))$/;"	v	line:6	language:Python	access:public
+script_dir	tests/test_performance_ts.py	/^script_dir = os.path.dirname(os.path.abspath(__file__))$/;"	v	line:6	language:Python	access:public
+script_dir	tests/test_time_signature.py	/^script_dir = os.path.dirname(os.path.abspath(__file__))$/;"	v	line:6	language:Python	access:public
+setUp	tests/test_new_key_logic.py	/^    def setUp(self):$/;"	m	line:6	language:Python	class:TestNewKeyLogic	access:public	signature:(self)
+solve_key	src/key_solver.py	/^    def solve_key(self, notes):$/;"	m	line:11	language:Python	class:SimplifiedMusicSolver	access:public	signature:(self, notes)
+solver	src/key_solver.py	/^    solver = SimplifiedMusicSolver()$/;"	v	line:338	language:Python	access:public
+test_ambiguous_triad	tests/test_new_key_logic.py	/^    def test_ambiguous_triad(self):$/;"	m	line:38	language:Python	class:TestNewKeyLogic	access:public	signature:(self)
+test_atonal_cluster	tests/test_new_key_logic.py	/^    def test_atonal_cluster(self):$/;"	m	line:52	language:Python	class:TestNewKeyLogic	access:public	signature:(self)
+test_no_perfect_match_c_major_plus_f_sharp	tests/test_new_key_logic.py	/^    def test_no_perfect_match_c_major_plus_f_sharp(self):$/;"	m	line:22	language:Python	class:TestNewKeyLogic	access:public	signature:(self)
+test_perfect_major_scale	tests/test_new_key_logic.py	/^    def test_perfect_major_scale(self):$/;"	m	line:9	language:Python	class:TestNewKeyLogic	access:public	signature:(self)
+test_performance_time_signature_detection	tests/test_performance_ts.py	/^def test_performance_time_signature_detection():$/;"	f	line:35	language:Python	access:public	signature:()
+test_without_meta_messages	tests/test_accent_based_time_signature.py	/^def test_without_meta_messages():$/;"	f	line:11	language:Python	access:public	signature:()

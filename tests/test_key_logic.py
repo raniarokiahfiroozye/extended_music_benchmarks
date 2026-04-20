@@ -1,5 +1,11 @@
+import sys
+import os
+
+# Ensure we can import from src
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
 import random
-from src.key_solver import SimplifiedMusicSolver # Assuming the previous logic is in key_solver.py
+from key_solver import SimplifiedMusicSolver # Assuming the previous logic is in key_solver.py
 
 def run_advanced_test_suite():
     solver = SimplifiedMusicSolver()
