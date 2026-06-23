@@ -1,3 +1,5 @@
+import os
+import subprocess
 import wave
 import struct
 import numpy as np
@@ -83,6 +85,23 @@ class MidiRenderer:
             wav_file.setsampwidth(2) # 16-bit
             wav_file.setframerate(self.sample_rate)
             wav_file.writeframes(pcm_data.tobytes())
+
+    def render_fluidsynth(self, midi_path, output_path, soundfont_path="/usr/share/sounds/sf2/FluidR3_GM.sf2"):
+        if not os.path.exists(soundfont_path):
+            soundfont_path = "/usr/share/sounds/sf2/default-GM.sf2"
+            
+        cmd = [
+            "fluidsynth",
+            "-ni",
+            soundfont_path,
+            midi_path,
+            "-F", output_path,
+            "-r", str(self.sample_rate)
+        ]
+        
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"FluidSynth failed: {result.stderr}")
 
 if __name__ == '__main__':
     import sys

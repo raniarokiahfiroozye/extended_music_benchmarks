@@ -112,8 +112,8 @@ def main():
         print(f"File: {case['name']}, Solver detected: {[r['time_signature'] for r in results]}")
         
         # Render
-        renderer.render(mid_path, wav_path)
-        print(f"Rendered {wav_path}")
+        renderer.render_fluidsynth(mid_path, wav_path)
+        print(f"Rendered {wav_path} (via FluidSynth)")
         
     # 2. Key test cases
     key_cases = [
@@ -145,8 +145,8 @@ def main():
         print(f"File: {case['name']}, Solver detected: {detected_keys}")
         
         # Render
-        renderer.render(mid_path, wav_path)
-        print(f"Rendered {wav_path}")
+        renderer.render_fluidsynth(mid_path, wav_path)
+        print(f"Rendered {wav_path} (via FluidSynth)")
 
 if __name__ == "__main__":
     main()
